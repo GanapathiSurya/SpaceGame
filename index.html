@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<style>
+canvas {
+    border:1px solid #d3d3d3;
+   background-image: url("space.jpg");
+
+}
+
+</style>
+</head>
+<body onload="startGame()" style="text-align: center;">
+    <br>
+<script>
+var colors=["#e6e6e6","#d9d9d9","#cccccc","#b5a197","#cc8800"];
+var myGamePiece;
+var myObstacles = [];
+var myScore;
+function startGame() {
+    myGamePiece = new component(30,30,"lightgreen",225,370);
+    myGamePiece.gravity=0;
+    myScore= new component("50px","Consolas","white",250,40,"text");
+    myGameArea.start();
+}
+var myGameArea= {
+    canvas : document.createElement("canvas"),
+    start : function(){
+        this.canvas.width=480;
+        this.canvas.height=400;
+        this.context = this.canvas.getContext("2d");
+        document.body.insertBefore(this.canvas,document.getElementById("canvas"));
+     this.frameNo= 0;
+     this.interval= setInterval(updateGameArea,20);
+    },
+    clear : function() {
+        this.context.clearRect(0,0,this.canvas.width,this.canvas.height);
+    }
+}
+function component(width,height,color,x,y,type,radius) {
+    this.type=type;
+    this.score= 0;
+    this.width= width;
+    this.height = height;
+    this.x = x;
+    this.y = y;
+    this.gravity=0;
+    this.gravitySpeed=0;
+    this.update = function() {
+        ctx = myGameArea.context;
+        if(this.type == "text")
+        {
+            ctx.font = this.width-20+" "+this.height-20;
+            ctx.fillStyle=color;
+            ctx.fillText(this.text,this.x,this.y);
+        }
+        else
+        {
+          ctx.fillStyle = color;
+          ctx.fillRect(this.x,this.y,this.width,this.height);  
+        }
+    }
+    this.newPos = function() {
+    this.gravitySpeed += this.gravity;
+    this.x += this.gravitySpeed;
+    this.hitBottom();
+    }
+    
+    this.hitBottom = function() {
+        var rockleft=30;
+        var rockright=450;
+        if (this.x < rockleft) {
+           this.x = rockleft;
+
+        }
+        if (this.x > rockright) {
+           this.x = rockright;
+        }
+        this.gravitySpeed=0;
+        return;
+    }
+    this.crashWith = function(otherobj) {
+        var myleft = this.x;
+        var myright = this.x + (this.width);
+        var mytop = this.y;
+        var mybottom = this.y + (this.height);
+        var otherleft = otherobj.x;
+        var otherright = otherobj.x + (otherobj.width);
+        var othertop = otherobj.y;
+        var otherbottom = otherobj.y + (otherobj.height);
+        var crash = true;
+        if ((mybottom < othertop) || (mytop > otherbottom) || (myright < otherleft) || (myleft > otherright)) {
+            crash = false;
+        }
+        return crash;
+    }
+}
+
+function updateGameArea() {
+    var x,y,leftgap,minleftgap,maxleftgap,middlegap,minmiddlegap,maxmiddlegap,initialy,initialx;
+    for(i =0 ; i < myObstacles.length;i+=1)
+    {
+        if(myGamePiece.crashWith(myObstacles[i]))
+        {
+            return;
+        }
+    }
+    myGameArea.clear();
+    myGameArea.frameNo += 1;
+    if(myGameArea.frameNo == 1 || everyInterval(80))
+    {
+    x = myGameArea.canvas.width;
+    y = myGameArea.canvas.height;
+    minleftgap=60;
+    maxleftgap=120;
+    minmiddlegap=60;
+    maxmiddlegap=120;
+    minrightgap=60;
+    maxrightgap=120;
+    leftgap=Math.floor(Math.random()*(maxleftgap-minleftgap+1)+minleftgap);
+    middlegap=Math.floor(Math.random()*(maxmiddlegap-minmiddlegap+1)+minmiddlegap);
+    rightgap=Math.floor(Math.random()*(maxrightgap-minrightgap+1)+minrightgap);
+    randomcolor=Math.floor(Math.random()*5);
+    myObstacles.push(new component(20,20,colors[randomcolor],leftgap,0,
+        "27% 73% 52% 48% / 74% 31% 69% 26%"));
+    randomcolor=Math.floor(Math.random()*5);
+    myObstacles.push(new component(20,20,colors[randomcolor],leftgap+50+middlegap,0,"27% 73% 52% 48% / 74% 31% 69% 26%"));
+    randomcolor=Math.floor(Math.random()*5);
+    myObstacles.push(new component(20,20,colors[randomcolor],leftgap+50+middlegap+50+rightgap,0,"27% 73% 52% 48% / 74% 31% 69% 26%"));
+
+    /*if(document.getElementById('bullet').clicked == true)
+    {
+        alert("true");
+    initialx=myGamePiece.x+myGamePiece.width/2;
+    initialy=myGamePiece.y;
+    bulletPieces.push(new component(10,20,"orange",initialx,initialy));
+    }*/
+    }
+    for(i=0;i<myObstacles.length;i+=1)
+    {
+        myObstacles[i].y+=1;
+        myObstacles[i].update();
+
+    }
+    /*for(i=0;i<bulletPieces.length;i+=1)
+    {
+        bulletPieces[i].y+=1;
+        bulletPieces[i].update();
+
+    }*/
+    myScore.text= "SCORE:" + myGameArea.frameNo;
+    myScore.update();
+    myGamePiece.newPos();
+    myGamePiece.update();
+}
+function everyInterval(n) {
+    if((myGameArea.frameNo / n) % 1 == 0)
+    {
+        return true;
+    }
+    return false;
+}
+function accelerate(n) {
+    myGamePiece.gravity = n;
+
+}
+
+function reload(){
+    location.reload();
+}
+</script>
+<div id="canvas">
+<center><table>
+    <tr>
+        <td>
+         <button onmouseup="accelerate(-0.5)">ACCELERATE LEFT</button>
+        </td>
+    <td>
+       <button onmouseup="accelerate(0.5)" >ACCELERATE RIGHT</button>
+    </td>
+    </tr>
+    <tr>
+        <td colspan="2" style="text-align: center;"><button onclick="reload()">Play Again</button></td>
+    </tr>
+</table></center>
+</div>
+</body>
+</html>
