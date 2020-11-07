@@ -8,7 +8,14 @@ canvas {
    background-image: url("space.jpg");
 
 }
-
+.btn {
+    background-color: black;
+    border-radius: 10px;
+    padding:10px;
+    color: white;
+    outline: none;
+    border:none;
+}
 </style>
 </head>
 <body onload="startGame()" style="text-align: center;">
@@ -174,14 +181,15 @@ function reload(){
 <center><table>
     <tr>
         <td>
-         <button onmouseup="accelerate(-0.5)">ACCELERATE LEFT</button>
+         <button class="btn" onmouseup="accelerate(-0.5)">ACCELERATE LEFT</button>
         </td>
     <td>
-       <button onmouseup="accelerate(0.5)" >ACCELERATE RIGHT</button>
+       <button class="btn" onmouseup="accelerate(0.5)" >ACCELERATE RIGHT</button>
     </td>
     </tr>
     <tr>
-        <td colspan="2" style="text-align: center;"><button onclick="reload()">Play Again</button></td>
+        <td colspan="2" style="text-align: center;">
+            <button onclick="reload()" class="btn">Play Again</button></td>
     </tr>
 </table></center>
 </div>
